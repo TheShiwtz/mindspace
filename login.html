@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MindSpace — Logowanie / Rejestracja</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;font-family:Inter,system-ui,sans-serif;background:#0a0b0d;color:#e6f7fb;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+    .panel{background:#11161b;padding:30px;border-radius:12px;border:1px solid rgba(0,229,255,.2);width:100%;max-width:380px}
+    h1{margin:0 0 18px;color:#00e5ff;font-size:1.4rem}
+    label{display:block;margin:10px 0 6px;color:#9cc7d0}
+    input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,229,255,.3);background:#0c1013;color:#e6f7fb}
+    button{width:100%;padding:10px;margin-top:14px;border:0;border-radius:8px;cursor:pointer;background:linear-gradient(180deg,#00e5ff,#00bcd4);color:#001216;font-weight:600}
+    .switch{text-align:center;margin-top:12px}
+    .switch a{color:#00e5ff;text-decoration:none}
+    .back{display:inline-block;margin-bottom:12px;color:#00e5ff;text-decoration:none}
+    .err{color:#ff8a80;font-size:.9rem;margin-top:6px;display:none}
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <a class="back" href="index.html">← Powrót do sklepu</a>
+    <h1 id="title">Logowanie</h1>
+
+    <div id="nameWrap" style="display:none">
+    <label for="name">Nazwa</label>
+    <input id="name" placeholder="np. MindSpaceUser">
+  </div>  
+
+    <label for="email">Email</label>
+    <input id="email" placeholder="np. ty@domena.pl">
+
+    <label for="pass">Hasło</label>
+    <input id="pass" type="password" placeholder="●●●●●●●●">
+    <div class="err" id="err"></div>
+
+    <button id="submit">Zaloguj</button>
+
+    <div class="switch">
+      <a href="#" id="toggle">Nie masz konta? Zarejestruj się</a>
+    </div>
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const title = $('#title');
+    const nameWrap = $('#nameWrap');
+    const nameInput = $('#name');
+    const email = $('#email');
+    const pass = $('#pass');
+    const submit = $('#submit');
+    const toggle = $('#toggle');
+    const err = $('#err');
+
+    let mode = 'login'; // 'login' | 'register'
+
+    function setMode(m){
+      mode = m;
+      if(m==='register'){
+        title.textContent = 'Rejestracja';
+        submit.textContent = 'Zarejestruj';
+        nameWrap.style.display = 'block';
+        toggle.textContent = 'Masz już konto? Zaloguj się';
+      }else{
+        title.textContent = 'Logowanie';
+        submit.textContent = 'Zaloguj';
+        nameWrap.style.display = 'none';
+        toggle.textContent = 'Nie masz konta? Zarejestruj się';
+      }
+      err.style.display='none'; err.textContent='';
+    }
+
+    // przełącznik
+    toggle.onclick = (e)=>{ e.preventDefault(); setMode(mode==='login'?'register':'login'); };
+
+    // jeśli url ma #register → od razu rejestracja
+    if(location.hash==='#register') setMode('register');
+
+    // akcja formularza
+    submit.onclick = ()=>{
+      err.style.display='none'; err.textContent='';
+      const users = JSON.parse(localStorage.getItem('users')||'[]');
+
+      if(mode==='login'){
+        const u = users.find(u=>u.email===email.value && u.pass===pass.value);
+        if(!u){ err.textContent='Błędny email lub hasło.'; err.style.display='block'; return; }
+        localStorage.setItem('user', JSON.stringify(u));
+        alert('Zalogowano: '+u.name);
+        location.href='index.html';
+      }else{
+        if(!nameInput.value.trim()){ err.textContent='Podaj nazwę.'; err.style.display='block'; return; }
+        if(!email.value.trim()){ err.textContent='Podaj email.'; err.style.display='block'; return; }
+        if(!pass.value.trim()){ err.textContent='Podaj hasło.'; err.style.display='block'; return; }
+        if(users.some(u=>u.email===email.value)){ err.textContent='Taki email już istnieje.'; err.style.display='block'; return; }
+        const u = {name:nameInput.value.trim(), email:email.value.trim(), pass:pass.value};
+        users.push(u);
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('user', JSON.stringify(u));
+        alert('Zarejestrowano: '+u.name);
+        location.href='index.html';
+      }
+    };
+  </script>
+</body>
+</html>

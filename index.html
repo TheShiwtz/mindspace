@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MindSpace — Strona główna</title>
+  <meta name="description" content="MindSpace — ebooki o psychologii i rozwoju osobistym.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0b0d; --panel:#0f1418; --cyan:#00e5ff; --cyan-2:#00bcd4;
+      --text:#e6f7fb; --muted:#9cc7d0; --radius:14px; --ok:#20d66b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+    .container{max-width:1000px;margin:0 auto;padding:20px}
+
+    header{position:sticky;top:0;background:#0c1013;border-bottom:1px solid rgba(0,229,255,.2);z-index:10}
+    .nav{display:flex;justify-content:space-between;align-items:center}
+    .btn{border:1px solid rgba(0,229,255,.3);background:transparent;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;text-decoration:none}
+    .btn-ghost{border-color:rgba(0,229,255,.3)}
+    .btn-cyan{background:linear-gradient(180deg,var(--cyan),var(--cyan-2));color:#001216;border:0}
+    .btn-thin{font-weight:300;text-decoration:none;display:inline-block}
+    a.btn, a.btn:link, a.btn:visited, a.btn:hover, a.btn:active{ text-decoration:none !important; }
+
+    /* Hero */
+    .hero{background:#11161b;border:1px solid rgba(0,229,255,.2);border-radius:14px;padding:40px 20px;text-align:center;margin:24px 0 30px}
+    .hero h1{margin:0 0 12px;font-size:2rem;color:var(--cyan)}
+    .hero p{margin:0;font-size:1.2rem;color:var(--muted);line-height:1.6}
+
+    /* Produkty */
+    .grid{display:grid;gap:20px;grid-template-columns:repeat(3,1fr);margin-top:16px}
+    @media (max-width:1023px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:639px){  .grid{grid-template-columns:1fr} }
+
+    .card{
+      display:flex;flex-direction:column;
+      border-radius:14px;background:#11161b;padding:14px;
+      box-shadow:0 8px 24px rgba(0,229,255,.08), inset 0 0 0 1px rgba(0,229,255,.08)
+    }
+    .cover{width:100%;height:260px;overflow:hidden;border-radius:10px}
+    .cover img{display:block;width:100%;height:100%;object-fit:cover;border-radius:10px}
+    .title{margin:12px 0 4px;font-size:1.1rem;font-weight:600}
+    .price{color:var(--muted);margin:0 0 8px}
+
+    footer{margin-top:20px;padding:18px;border-top:2px solid rgba(0,229,255,.2);color:var(--muted);text-align:center;width:100%}
+
+    /* Modal koszyka */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
+    .cart-modal{background:#11161b;padding:18px;border:1px solid rgba(0,229,255,.2);border-radius:16px;max-width:720px;width:94%}
+    .cart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .cart-item{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid rgba(0,229,255,.12);padding:8px 0}
+    .cart-title{flex:1}
+    .qty{display:flex;align-items:center;gap:6px}
+    .qty button{min-width:28px}
+    .total{margin-top:10px;text-align:right;font-weight:700}
+    .cart-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+
+    /* Toast */
+    .toast{position:fixed;left:50%;top:18%;transform:translateX(-50%) translateY(-10px);
+      background:#0e1a12;border:1px solid rgba(32,214,107,.35);color:#d6ffe8;
+      padding:12px 16px;border-radius:12px;display:flex;gap:10px;align-items:center;
+      opacity:0;pointer-events:none;z-index:60;transition:.25s ease-in-out}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .check{width:22px;height:22px;border-radius:50%;background:var(--ok);display:inline-grid;place-items:center;color:#062d16;font-weight:900}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="index.html" style="color:#00e5ff;text-decoration:none;font-weight:700">MindSpace</a>
+      <div>
+        <button class="btn btn-ghost" id="cartBtn">🛒 <span id="cartCount">0</span></button>
+        <span id="loginArea"><a class="btn btn-ghost btn-thin" href="login.html">🔑 Zaloguj</a></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Witamy w MindSpace 📚</h1>
+      <p>Odkryj nasze ebooki o psychologii, rozwoju osobistym <br> i sztuce lepszego życia.</p>
+    </section>
+
+    <section>
+      <h2>Nasze e-booki</h2>
+      <div class="grid" id="products">
+
+        <!-- EBOOK 1 -->
+        <div class="card" data-id="e1" data-title="Siła nawyków" data-price="39.90">
+          <div class="cover"><img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800" alt="Siła nawyków"></div>
+          <h3 class="title">Siła nawyków</h3>
+          <p class="price">39,90 zł</p>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-cyan add">Dodaj do koszyka</button>
+            <a class="btn btn-ghost" href="produkt1.html">Zobacz</a>
+          </div>
+        </div>
+
+        <!-- EBOOK 2 -->
+        <div class="card" data-id="e2" data-title="Psychologia szczęścia" data-price="29.90">
+          <div class="cover"><img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800" alt="Psychologia szczęścia"></div>
+          <h3 class="title">Psychologia szczęścia</h3>
+          <p class="price">29,90 zł</p>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-cyan add">Dodaj do koszyka</button>
+            <a class="btn btn-ghost" href="produkt2.html">Zobacz</a>
+          </div>
+        </div>
+
+        <!-- EBOOK 3 -->
+        <div class="card" data-id="e3" data-title="Umysł w stresie" data-price="34.90">
+          <div class="cover"><img src="https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800" alt="Umysł w stresie"></div>
+          <h3 class="title">Umysł w stresie</h3>
+          <p class="price">34,90 zł</p>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-cyan add">Dodaj do koszyka</button>
+            <a class="btn btn-ghost" href="produkt3.html">Zobacz</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2025 MindSpace (demo)</footer>
+
+  <!-- MODAL KOSZYKA -->
+  <div class="modal-backdrop" id="cartModal">
+    <div class="cart-modal">
+      <div class="cart-head">
+        <h3 style="margin:0">Twój koszyk</h3>
+        <button class="btn btn-ghost" id="closeCart">Zamknij</button>
+      </div>
+      <div id="cartList"></div>
+      <div class="total">Suma: <span id="cartTotal">0,00 zł</span></div>
+      <div class="cart-actions">
+        <button class="btn btn-ghost" id="clearCart">Wyczyść</button>
+        <a class="btn btn-cyan" id="goCheckout" href="checkout.html">Przejdź do zamówienia</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><span class="check">✓</span><span id="toastMsg">Dodano do koszyka</span></div>
+
+  <script>
+  (function(){
+    const $  = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const money = n => (Number(n)||0).toFixed(2).replace('.',',')+' zł';
+
+    // STAN
+    const state = {
+      cart: JSON.parse(localStorage.getItem('cart') || '[]'),
+      user: JSON.parse(localStorage.getItem('user') || 'null')
+    };
+    const saveCart = ()=> localStorage.setItem('cart', JSON.stringify(state.cart));
+
+    // TOAST
+    let toastTimer=null;
+    function showToast(msg='Dodano do koszyka'){
+      const t=$('#toast'),m=$('#toastMsg'); if(!t) return;
+      if(m) m.textContent = msg;
+      t.classList.add('show'); clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> t.classList.remove('show'), 2000);
+    }
+
+    // KOSZYK
+    function addToCart(id,title,price){
+      const p=parseFloat(price);
+      const f=state.cart.find(i=>i.id===id);
+      if(f) f.qty++; else state.cart.push({id,title,price:isNaN(p)?0:p,qty:1});
+      saveCart(); updateUI(); showToast();
+    }
+    function inc(i){ state.cart[i].qty++; saveCart(); renderCart(); updateUI(); }
+    function dec(i){ state.cart[i].qty=Math.max(0,state.cart[i].qty-1); if(state.cart[i].qty===0) state.cart.splice(i,1); saveCart(); renderCart(); updateUI(); }
+    function delItem(i){ state.cart.splice(i,1); saveCart(); renderCart(); updateUI(); }
+    function sum(){ return state.cart.reduce((a,i)=>a+i.price*i.qty,0); }
+
+    function renderCart(){
+      const list=$('#cartList'), total=$('#cartTotal'); if(!list||!total) return;
+      list.innerHTML='';
+      if(state.cart.length===0){
+        list.innerHTML = '<p style="color:#9cc7d0">Koszyk jest pusty.</p>';
+        total.textContent = money(0);
+        const goCheckout=$('#goCheckout'); if(goCheckout){ goCheckout.style.pointerEvents='none'; goCheckout.style.opacity=.5; }
+        return;
+      }
+      state.cart.forEach((it,idx)=>{
+        const row=document.createElement('div'); row.className='cart-item';
+        row.innerHTML = `
+          <div class="cart-title">${it.title}</div>
+          <div class="qty">
+            <button class="btn btn-ghost" data-dec="${idx}">–</button>
+            <span>${it.qty}</span>
+            <button class="btn btn-ghost" data-inc="${idx}">+</button>
+          </div>
+          <div>${money(it.price*it.qty)}</div>
+          <button class="btn btn-ghost" data-del="${idx}">Usuń</button>
+        `;
+        list.appendChild(row);
+      });
+      total.textContent = money(sum());
+      $$('#cartList [data-inc]').forEach(b=> b.onclick=()=>inc(+b.dataset.inc));
+      $$('#cartList [data-dec]').forEach(b=> b.onclick=()=>dec(+b.dataset.dec));
+      $$('#cartList [data-del]').forEach(b=> b.onclick=()=>delItem(+b.dataset.del));
+      const goCheckout=$('#goCheckout'); if(goCheckout){ goCheckout.style.pointerEvents='auto'; goCheckout.style.opacity=1; }
+    }
+
+    // LOGIN UI
+    function renderLogin(){
+      const area = $('#loginArea'); if(!area) return;
+      if(state.user){
+        area.innerHTML = `<span>👋 ${state.user.name}</span> <button class="btn btn-ghost btn-thin" id="logoutBtn">Wyloguj</button>`;
+        const out = $('#logoutBtn');
+        if(out){ out.onclick = ()=>{ state.user=null; localStorage.removeItem('user'); renderLogin(); }; }
+      }else{
+        area.innerHTML = `<a class="btn btn-ghost btn-thin" href="login.html">🔑 Zaloguj</a> <a class="btn btn-cyan btn-thin" href="login.html#register">✨ Zarejestruj</a>`;
+      }
+    }
+
+    function updateUI(){
+      // licznik
+      const cartCount=$('#cartCount'); if(cartCount) cartCount.textContent = state.cart.reduce((a,i)=>a+(i.qty||0),0);
+      // login area
+      renderLogin();
+      // stan checkout linku
+      const goCheckout=$('#goCheckout');
+      if(goCheckout){
+        const isEmpty = state.cart.length===0;
+        goCheckout.style.pointerEvents = isEmpty ? 'none' : 'auto';
+        goCheckout.style.opacity = isEmpty ? .5 : 1;
+      }
+    }
+
+    function bindCartModal(){
+      const modal=$('#cartModal');
+      $('#cartBtn').onclick=()=>{ modal.style.display='flex'; renderCart(); };
+      $('#closeCart').onclick=()=>{ modal.style.display='none'; };
+      $('#clearCart').onclick=()=>{ if(confirm('Wyczyścić koszyk?')){ state.cart=[]; saveCart(); renderCart(); updateUI(); } };
+      modal.addEventListener('click', e=>{ if(e.target===modal) modal.style.display='none'; });
+      document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
+    }
+
+    // START
+    document.addEventListener('DOMContentLoaded', ()=>{
+      updateUI();
+      // podpinamy „Dodaj do koszyka”
+      $$('#products .card .add').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const card = btn.closest('.card');
+          addToCart(card.dataset.id, card.dataset.title, card.dataset.price);
+        });
+      });
+      bindCartModal();
+    });
+  })();
+  </script>
+</body>
+</html>

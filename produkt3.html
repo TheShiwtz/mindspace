@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Umysł w stresie — MindSpace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;font-family:Inter,system-ui,sans-serif;background:#0a0b0d;color:#e6f7fb}
+    .container{max-width:800px;margin:0 auto;padding:20px}
+    header{padding:14px 0;border-bottom:1px solid rgba(0,229,255,.2)}
+    .cover{width:100%;height:420px;overflow:hidden;border-radius:14px;margin-bottom:20px}
+    .cover img{width:100%;height:100%;object-fit:cover}
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;background:linear-gradient(180deg,#00e5ff,#00bcd4);color:#001216;font-weight:600}
+  </style>
+</head>
+<body>
+  <header class="container">
+    <a href="index.html" style="color:#00e5ff;text-decoration:none">← Powrót</a>
+  </header>
+  <main class="container">
+    <div class="cover"><img src="https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800" alt="Umysł w stresie"></div>
+    <h1>Umysł w stresie</h1>
+    <p><b>Cena:</b> 34,90 zł</p>
+    <p>Skuteczne techniki radzenia sobie ze stresem oparte na psychologii i neuronauce.</p>
+    <button class="btn" id="addBtn">Dodaj do koszyka</button>
+  </main>
+  <script>
+    const btn = document.getElementById('addBtn');
+    let cart = JSON.parse(localStorage.getItem('cart')||'[]');
+    btn.onclick=()=>{
+      const id='e3'; const title='Umysł w stresie'; const price=34.90;
+      const f=cart.find(i=>i.id===id);
+      if(f) f.qty++; else cart.push({id,title,price,qty:1});
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('Dodano do koszyka: '+title);
+    };
+  </script>
+</body>
+</html>

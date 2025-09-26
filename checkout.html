@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MindSpace — Zamówienie (demo)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0a0b0d;--panel:#11161b;--cyan:#00e5ff;--text:#e6f7fb;--muted:#9cc7d0}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:900px;margin:0 auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    a, .btn{color:var(--text);text-decoration:none}
+    .box{background:var(--panel);border:1px solid rgba(0,229,255,.2);border-radius:14px;padding:18px}
+    h1{margin:0 0 12px;color:var(--cyan)}
+    .row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,229,255,.12)}
+    .row span.price{justify-self:end}
+    .total{display:flex;justify-content:flex-end;gap:12px;margin-top:12px;font-weight:700}
+    .muted{color:var(--muted)}
+    .btn{border:1px solid rgba(0,229,255,.3);padding:10px 14px;border-radius:10px;cursor:pointer;display:inline-block}
+    .btn-ghost{background:transparent}
+    .btn-cyan{background:linear-gradient(180deg,#00e5ff,#00bcd4);color:#001216;border:0}
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+    .empty{padding:18px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h2 style="margin:0">MindSpace</h2>
+      <a class="btn btn-ghost" href="index.html">← Wróć do sklepu</a>
+    </header>
+
+    <h1>Podsumowanie zamówienia</h1>
+    <div class="box">
+      <div id="orderList"></div>
+
+      <div class="total">
+        <span>Suma:</span>
+        <span id="orderTotal">0,00 zł</span>
+      </div>
+
+      <p class="muted" style="margin-top:10px">
+        To płatność <b>DEMO</b> — nic nie jest faktycznie pobierane. Po kliknięciu „Zapłać (demo)” zobaczysz stronę potwierdzenia, a koszyk zostanie wyczyszczony.
+      </p>
+
+      <div class="actions">
+        <a class="btn btn-ghost" href="index.html">Kontynuuj zakupy</a>
+        <button class="btn btn-cyan" id="payDemo">Zapłać (demo)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const money = n => (Number(n)||0).toFixed(2).replace('.',',')+' zł';
+    const listEl  = document.getElementById('orderList');
+    const totalEl = document.getElementById('orderTotal');
+    const btnPay  = document.getElementById('payDemo');
+
+    const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+
+    function render(){
+      listEl.innerHTML='';
+      if(!cart.length){
+        listEl.innerHTML = '<div class="empty">Koszyk jest pusty.</div>';
+        totalEl.textContent = money(0);
+        btnPay.disabled = true;
+        btnPay.style.opacity = .5;
+        btnPay.style.pointerEvents = 'none';
+        return;
+      }
+      let sum = 0;
+      cart.forEach(it=>{
+        const row = document.createElement('div');
+        row.className = 'row';
+        const line = (it.price*it.qty);
+        sum += line;
+        row.innerHTML = `
+          <span>${it.title} <span class="muted">× ${it.qty}</span></span>
+          <span class="muted">${money(it.price)}</span>
+          <span class="price">${money(line)}</span>
+        `;
+        listEl.appendChild(row);
+      });
+      totalEl.textContent = money(sum);
+      btnPay.disabled = false;
+      btnPay.style.opacity = 1;
+      btnPay.style.pointerEvents = 'auto';
+    }
+    render();
+
+    btnPay.onclick = ()=>{
+      // „Płatność” demo: zapisz zamówienie, wyczyść koszyk, przejdź na success.html
+      localStorage.setItem('last_order', JSON.stringify(cart));
+      localStorage.removeItem('cart');
+      // symulacja krótkiego przetwarzania
+      btnPay.disabled = true; btnPay.textContent = 'Przetwarzanie...';
+      setTimeout(()=> location.href = 'success.html', 700);
+    };
+  </script>
+</body>
+</html>
